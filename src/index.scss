@@ -1,0 +1,93 @@
+:root {
+  /* Fluid, accessible base font size that scales with viewport */
+  font-size: clamp(16px, 1.0vw + 10px, 20px);
+}
+
+#root {
+  width: 100%;
+  max-width: none;      /* remove cap so layout can expand */
+  padding: 0 1rem;      /* modest side padding */
+  box-sizing: border-box;
+}
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: start center; /* avoid vertical squish and allow natural flow */
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #e2e8f0; /* slightly darker light slate gray */
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  appearance: none;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12); /* subtle light border like dark cards */
+  padding: 0.55em 1.1em;
+  font-size: 0.98em;
+  font-weight: 600;
+  font-family: inherit;
+  background-color: #1f2937; /* slate-800 to match card */
+  color: #f3f4f6; /* light text */
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.02s ease;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(15, 23, 42, 0.12);
+}
+button:hover {
+  background-color: #374151; /* slate-700 hover */
+  border-color: rgba(255, 255, 255, 0.18);
+}
+button:focus,
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.35), 0 4px 12px rgba(15, 23, 42, 0.18);
+}
+button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2), 0 1px 4px rgba(15, 23, 42, 0.12);
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #e2e8f0; /* slightly darker light slate gray */
+  }
+  body { background-color: #e2e8f0; }
+  a:hover {
+    color: #747bff;
+  }
+  /* Button colors are defined above; keep consistent in light mode */
+}

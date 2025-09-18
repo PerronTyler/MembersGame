@@ -1,0 +1,290 @@
+/* Basic, clean styling for the CourseManager */
+.course-manager {
+  max-width: 1600px; /* widen content further to use more horizontal space */
+  margin: 0 auto;
+  padding: 1rem 0.5rem; /* reduce left/right padding a bit more */
+}
+
+/* Horizontal course header bar */
+.course-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  flex-wrap: wrap;
+  border: 1px solid rgba(100, 108, 255, 0.35);
+  background: rgba(100, 108, 255, 0.06);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  margin: 0.75rem 0 1rem;
+  position: sticky; /* make header stick to top */
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.course-header .title {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.course-header .slopes-row {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* Responsive two-column layout for less scrolling */
+.grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* two columns on desktop */
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  border: 1px solid rgba(100, 108, 255, 0.35);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: rgba(100, 108, 255, 0.06);
+}
+
+.form .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+label span {
+  font-size: 0.9rem;
+  color: #646cff;
+}
+
+input, select {
+  border: 1px solid rgba(60,60,60,0.35);
+  background: rgba(255,255,255,0.05);
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+  color: inherit;
+}
+
+.ratings legend {
+  padding: 0 0.35rem;
+}
+
+.actions {
+  margin-top: 1rem;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.ratings-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid rgba(60,60,60,0.35);
+  font-size: 0.85rem;
+}
+
+.chip.white { background: #f8f9ff; color: #1a1a1a; }
+.chip.blue  { background: #e7eeff; color: #0f3d91; }
+.chip.red   { background: #ffe7ea; color: #7b1e2b; }
+
+.players {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.5rem;
+}
+
+.player {
+  border: 1px solid rgba(60,60,60,0.35);
+  border-radius: 10px;
+  padding: 0.6rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.25rem 0.5rem;
+}
+
+/* Expand teams list across wider columns */
+.teams-panel .players {
+  grid-template-columns: repeat(4, minmax(360px, 1fr));
+}
+
+@media (max-width: 1400px) {
+  .teams-panel .players {
+    grid-template-columns: repeat(3, minmax(360px, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .teams-panel .players {
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .teams-panel .players {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Span teams panel across both grid columns */
+.teams-panel {
+  grid-column: 1 / -1;
+}
+
+/* Center the Teams panel title at the top */
+.teams-panel > h2 {
+  text-align: center;
+  width: 100%;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Center the Players panel title at the top */
+.players-panel > h2 {
+  text-align: center;
+  width: 100%;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Game summary chips spread evenly across full width */
+.teams-panel .game-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.4rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+/* Players panel mimic teams layout */
+.players-panel .players {
+  grid-template-columns: repeat(3, minmax(360px, 1fr));
+}
+
+@media (max-width: 1400px) {
+  .players-panel .players {
+    grid-template-columns: repeat(3, minmax(360px, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .players-panel .players {
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .players-panel .players {
+    grid-template-columns: 1fr;
+  }
+}
+
+.players-panel {
+  grid-column: 1 / -1;
+}
+
+/* Add Player panel as a horizontal bar under header */
+.add-player-panel {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center; /* vertically center h2 and form */
+  gap: 0.75rem;
+}
+
+.add-player-panel h2 {
+  margin: 0 0.75rem 0 0;
+  font-size: 1rem;
+}
+
+.add-player-panel .form {
+  display: flex;
+  align-items: center; /* vertically center controls */
+  gap: 0.5rem 0.75rem;
+  flex-wrap: nowrap; /* keep everything on one line */
+  justify-content: space-between; /* spread items evenly */
+  width: 100%;
+}
+
+.add-player-panel .form .grid {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem 0.75rem;
+  flex: 1 1 0; /* allow each grid cluster to take equal width */
+  min-width: 0;
+}
+
+.add-player-panel .form label {
+  min-width: auto;
+  flex: 1 1 auto; /* inputs grow evenly inside each cluster */
+  display: flex;
+  align-items: center; /* align label text and input */
+  gap: 0.4rem;
+}
+
+.add-player-panel .actions {
+  margin-top: 0;
+  flex: 0 0 auto; /* keep action buttons sized to content */
+}
+
+/* Compact input widths for single-line layout */
+.add-player-panel .form input[type="text"] {
+  width: 140px;
+}
+
+.add-player-panel .form input[type="number"] {
+  width: 90px;
+}
+
+.add-player-panel .form .chip {
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.add-player-panel .form input[type="checkbox"] {
+  transform: scale(0.9);
+}
+
+.add-player-panel .actions button {
+  padding: 0.4rem 0.6rem;
+}
+
+.player .name {
+  font-weight: 600;
+}
+
+.player .meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}

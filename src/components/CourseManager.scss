@@ -1,0 +1,681 @@
+/* Basic, clean styling for the CourseManager */
+.course-manager {
+  max-width: min(2000px, 96vw); /* fluid, wider layout */
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.25rem 1rem; /* modestly increase side padding for larger widths */
+}
+
+/* Create Course specific tweaks */
+.create-course-panel {
+  padding: 1.25rem 1.25rem 1.1rem; /* add a bit more breathing room */
+
+  > h2 {
+    color: inherit; /* match Members Game title color */
+  }
+
+  /* Top grid: course name, par, fees */
+  .form > .grid:first-of-type label > span {
+    color: inherit; /* match Members Game title color */
+    font-weight: 600;
+  }
+
+  /* Slopes legend matches title color via earlier rule, ensure labels too */
+  .slopes .grid label > span {
+    font-weight: 700;
+  }
+
+  /* Add more spacing above the slopes section */
+  .slopes {
+    margin-top: 0.75rem;
+  }
+}
+
+/* Horizontal course header bar */
+.course-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  flex-wrap: wrap;
+  /* Match panel styling */
+  border: 1px solid rgba(160, 140, 120, 0.25); /* warm subtle border */
+  background: #f7f2ea; /* light brown to match panels */
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  margin: 0.75rem 0 1rem;
+  position: sticky; /* make header stick to top */
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  /* neutral, darker shadow */
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16), 0 3px 10px rgba(15, 23, 42, 0.08);
+
+  .title {
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .slopes-row {
+    display: flex;
+    gap: 0.4rem;
+    /* Header tee chips: keep color backgrounds, bold text */
+    .chip {
+      font-weight: 700;
+    }
+    .chip.white {
+      background: #ffffff !important;
+      color: #111 !important;
+      border-color: rgba(0,0,0,0.15) !important;
+    }
+    .chip.blue {
+      background: #e7eeff !important;
+      color: #0f3d91 !important;
+      border-color: rgba(59,130,246,0.35) !important;
+    }
+    .chip.red {
+      background: #ffe7ea !important;
+      color: #7b1e2b !important;
+      border-color: rgba(239,68,68,0.35) !important;
+    }
+  }
+}
+
+/* Responsive two-column layout for less scrolling */
+.grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* two columns on desktop */
+  gap: 1rem;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  /* warm subtle border to pair with light brown background */
+  border: 1px solid rgba(160, 140, 120, 0.25);
+  border-radius: 12px; /* slightly rounder corners */
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #f7f2ea; /* previous light brown background */
+  /* subtle outline + elevated shadow */
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35), /* faint inner outline for crispness */
+    0 10px 28px rgba(15, 23, 42, 0.18),
+    0 4px 10px rgba(15, 23, 42, 0.10);
+
+  /* Center all panel titles for consistency */
+  > h2 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: inherit; /* match Members Game title color */
+  }
+}
+
+.form {
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  span {
+    font-size: 0.9rem;
+    color: inherit; /* match Members Game title color */
+  }
+}
+
+input,
+select {
+  border: 1px solid rgba(60,60,60,0.35);
+  background: rgba(255, 255, 255, 0.4); /* lighter, like in Slopes section */
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+  color: inherit;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: rgba(100, 108, 255, 0.6);
+  box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.2);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.ratings legend {
+  padding: 0 0.35rem;
+}
+
+/* Create Course: style slopes fieldset to fit scheme */
+.slopes {
+  border: 1px solid rgba(160, 140, 120, 0.25);
+  background: #f7f2ea; /* match panel background */
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem 0.75rem;
+
+  legend {
+    font-weight: 700;
+    color: inherit; /* match other titles */
+    background: #f7f2ea;
+    border-radius: 6px;
+    padding: 0 0.4rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(140px, 1fr));
+    gap: 0.6rem 0.75rem;
+  }
+
+  /* Compact label-above-input styling and widths for Create Course */
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    > span { font-size: 0.9rem; color: #646cff; font-weight: 600; }
+  }
+  input[type="text"] { width: 220px; }
+  input[type="number"] { width: 100px; }
+
+  /* Make slope labels look like header tee chips by order: White, Blue, Red */
+  .grid label > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid rgba(0,0,0,0.15);
+    width: fit-content;
+  }
+  .grid label:nth-child(1) > span { /* White */
+    background: #ffffff;
+    color: #111;
+  }
+  .grid label:nth-child(2) > span { /* Blue */
+    background: #e7eeff;
+    color: #0f3d91;
+    border-color: rgba(59,130,246,0.35);
+  }
+  .grid label:nth-child(3) > span { /* Red */
+    background: #ffe7ea;
+    color: #7b1e2b;
+    border-color: rgba(239,68,68,0.35);
+  }
+}
+
+.actions {
+  margin-top: 1rem;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.ratings-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.85rem;
+  background: #1f2937; /* slate-800 */
+  color: #f3f4f6; /* gray-100 */
+  border: 1px solid rgba(255,255,255,0.12);
+
+  /* tee/color variants tuned for dark theme */
+  &.white { background: rgba(255,255,255,0.12); color: #ffffff; border-color: rgba(255,255,255,0.25); }
+  &.blue  { background: rgba(59,130,246,0.15); color: #93c5fd; border-color: rgba(59,130,246,0.35); }
+  &.red   { background: rgba(239,68,68,0.15); color: #fecaca; border-color: rgba(239,68,68,0.35); }
+}
+
+.players {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.5rem;
+}
+
+.player {
+  /* Dark card theme for both Teams and Players - use darker color like team cards */
+  background: #111827; /* gray-900 - darker like team inner cards */
+  color: #e5e7eb; /* gray-200 */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 0.6rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.25rem 0.5rem;
+  box-sizing: border-box;
+  max-width: 100%;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: #1f2937; /* lighter on hover */
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  /* inner player rows inside a team card: keep same darker color */
+  .player {
+    background: #111827; /* gray-900 */
+    color: #e5e7eb; /* gray-200 */
+    border-color: rgba(255,255,255,0.1);
+  }
+
+  /* Chips inside dark cards: higher contrast */
+  .chip {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e5e7eb;
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  /* Tee chips in cards: keep representative colors like header */
+  .chip.white {
+    background: #ffffff;
+    color: #111;
+    border-color: rgba(0,0,0,0.15);
+  }
+  .chip.blue {
+    background: #e7eeff;
+    color: #0f3d91;
+    border-color: rgba(59,130,246,0.35);
+  }
+  .chip.red {
+    background: #ffe7ea;
+    color: #7b1e2b;
+    border-color: rgba(239,68,68,0.35);
+  }
+
+  .name { 
+    font-weight: 700; /* make names bolder */
+    font-size: 1.15rem; /* larger font for names */
+  }
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600; /* make handicap text bold */
+    font-size: 1.05rem; /* larger font for handicap info */
+  }
+}
+
+/* Left-align names on cards in both panels */
+.players-panel .player .name,
+.teams-panel .player .name { text-align: left; justify-self: start; }
+
+/* Use a fixed right column for meta so tee/CH/HI line up across cards */
+.players-panel .players > li.player,
+.teams-panel .players > li.player ul > li.player {
+  display: grid;
+  grid-template-columns: 1fr 260px; /* name left, meta right */
+  align-items: center;
+}
+
+/* Within meta, lock positions: chip then CH/HI text */
+.players-panel .player .meta,
+.teams-panel .player .meta {
+  display: grid;
+  grid-template-columns: 78px 1fr auto; /* add right column for icon actions */
+  align-items: center;
+  column-gap: 0.5rem;
+  position: relative; /* anchor popup menu */
+}
+
+/* Ensure chips have consistent width for alignment */
+.players-panel .player .meta .chip,
+.teams-panel .player .meta .chip {
+  min-width: 68px;
+  text-align: center;
+  font-size: 0.9rem;    /* match Add Player chip size */
+  font-weight: 700;      /* match Add Player boldness */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center; /* center text horizontally and vertically */
+}
+
+/* Card action icons on the far right */
+.players-panel .player .meta .card-actions,
+.teams-panel .player .meta .card-actions {
+  display: inline-flex;
+  gap: 0.25rem;
+  justify-self: end;
+}
+.players-panel .player .meta .card-actions .icon-btn,
+.teams-panel .player .meta .card-actions .icon-btn {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: #1f2937; /* match dark card */
+  color: #f3f4f6;
+  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.02s ease;
+}
+.players-panel .player .meta .card-actions .icon-btn:hover,
+.teams-panel .player .meta .card-actions .icon-btn:hover {
+  background: #374151;
+  border-color: rgba(255,255,255,0.18);
+}
+.players-panel .player .meta .card-actions .icon-btn:active,
+.teams-panel .player .meta .card-actions .icon-btn:active {
+  transform: translateY(1px);
+}
+
+/* Contextual popup menu for player cards */
+.players-panel .player .meta .card-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: #1f2937; /* match dark card */
+  color: #f3f4f6;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  box-shadow: 0 8px 22px rgba(15,23,42,0.25), 0 3px 8px rgba(15,23,42,0.15);
+  padding: 0.4rem;
+  z-index: 15;
+  display: flex;
+  gap: 0.35rem;
+}
+.players-panel .player .meta .card-menu.above {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+.players-panel .player .meta .card-menu button {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: #111827;
+  color: #f3f4f6;
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.players-panel .player .meta .card-menu button:hover {
+  background: #374151;
+  border-color: rgba(255,255,255,0.18);
+}
+
+/* Right-align Course Handicap / Handicap Index text */
+.players-panel .player .meta .hi,
+.teams-panel .player .meta .hi {
+  justify-self: end;
+  text-align: right;
+}
+
+/* Responsive: collapse to single column on small widths */
+@media (max-width: 640px) {
+  .players-panel .players > li.player,
+  .teams-panel .players > li.player ul > li.player {
+    grid-template-columns: 1fr;
+  }
+  .players-panel .player .meta,
+  .teams-panel .player .meta {
+    grid-template-columns: auto 1fr; /* allow natural wrapping on narrow screens */
+    justify-items: start;
+  }
+}
+
+/* Teams */
+.teams-panel {
+  grid-column: 1 / -1;
+
+  > h2 {
+    text-align: center;
+    width: 100%;
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Drag and drop styling */
+  .team-container {
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    
+    &:hover {
+      background: #243044; /* slightly lighter on hover */
+    }
+  }
+
+  .team-container[data-drag-over="true"] {
+    background: #2d4a3e; /* green tint when dragging over */
+    border-color: rgba(34, 197, 94, 0.3);
+    box-shadow: inset 0 0 0 2px rgba(34, 197, 94, 0.2);
+  }
+
+  .draggable-player {
+    cursor: grab;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+    
+    &:hover {
+      transform: translateY(-1px);
+    }
+    
+    &:active {
+      cursor: grabbing;
+    }
+    
+    &[draggable="true"]:hover {
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+    }
+  }
+
+  .draggable-player[data-dragging="true"] {
+    opacity: 0.5;
+    transform: rotate(2deg);
+  }
+
+  .game-summary {
+    display: flex;
+    flex-wrap: nowrap; /* keep everything on one line */
+    gap: 0.35rem;
+    align-items: center;
+    justify-content: center; /* center chips horizontally */
+    margin-bottom: 0.5rem;
+    overflow-x: auto; /* allow scroll if too many chips */
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    /* strip container chrome and use a divider underneath */
+    border: 0;
+    background: transparent;
+    color: inherit;
+    padding: 0.5rem 0.25rem 1.15rem; /* more space above and below divider */
+    border-bottom: 2px solid rgba(15, 23, 42, 0.22); /* thicker neutral divider */
+  }
+
+  .players {
+    /* Keep within panel: 3 columns max on wide screens */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    @media (max-width: 1100px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    @media (max-width: 700px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+/* Players */
+.players-panel {
+  grid-column: 1 / -1;
+
+  > h2 {
+    text-align: center;
+    width: 100%;
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .players {
+    grid-template-columns: repeat(3, minmax(360px, 1fr));
+
+    @media (max-width: 1100px) {
+      grid-template-columns: repeat(2, minmax(320px, 1fr));
+    }
+    @media (max-width: 700px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+/* Add Player panel as a horizontal bar under header */
+.add-player-panel {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column; /* title on top, form below */
+  gap: 0.5rem; /* reduce gap between title and form */
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .form {
+    display: grid;
+    gap: 0.6rem; /* reduce overall gap */
+    width: 100%;
+    grid-template-columns: 1fr 1fr 0.8fr 1.4fr auto; /* tighten column widths */
+    column-gap: 0.8rem; /* reduce space between columns */
+    align-items: end; /* align inputs and button along the bottom */
+
+    .grid {
+      /* Flatten child grids so labels participate directly in the parent grid */
+      display: contents;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem; /* reduce gap between label and input */
+      > span {
+        display: block;
+        font-size: 0.85rem; /* slightly smaller font */
+        color: inherit;
+        font-weight: 600;
+        line-height: 1rem; /* tighter line height */
+        min-height: 1rem; /* keep all titles aligned */
+      }
+      align-items: flex-start;
+      /* smaller, reasonable input widths */
+      input[type="text"] { width: 130px; padding: 0.5rem 0.6rem; } /* reduce padding */
+      input[type="number"] { width: 80px; padding: 0.5rem 0.6rem; } /* reduce padding */
+    }
+
+    /* No second row; all four fields live on a single row via the parent grid */
+
+    .chip { font-size: 0.9rem; padding: 0.25rem 0.5rem; }
+    input[type="checkbox"] { transform: scale(0.95); }
+
+    /* Tee column: center title above the middle (white) chip and keep spacing consistent */
+    label:nth-of-type(4) {
+      align-items: center;
+      gap: 0.25rem; /* reduce gap for tee chips */
+    }
+    label:nth-of-type(4) > span { text-align: center; }
+    label:nth-of-type(4) > div { justify-content: center; }
+
+    /* Tee chips styled like header tees (apply color only to inner span to avoid leak) */
+    label.chip { background: transparent !important; }
+    .chip.white span { background: #ffffff; color: #111; border-color: rgba(0,0,0,0.15); font-weight: 700; }
+    .chip.blue  span { background: #e7eeff; color: #0f3d91; border-color: rgba(59,130,246,0.35); font-weight: 700; }
+    .chip.red   span { background: #ffe7ea; color: #7b1e2b; border-color: rgba(239,68,68,0.35); font-weight: 700; }
+
+    /* Segmented control styling for tee chips */
+    label.chip {
+      position: relative;
+      user-select: none;
+      border: 0; /* visual styling handled by the pill span */
+      transition: transform 0.02s ease;
+
+      /* Hide native checkbox but keep it accessible */
+      input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      /* Visual pill */
+      span {
+        display: inline-block;
+        padding: 0.28rem 0.7rem;
+        border-radius: 999px;
+        border: 1px solid rgba(0,0,0,0.2); /* neutral border; color backgrounds stay inside */
+        transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.02s ease;
+      }
+
+      /* Hover feedback over the entire chip (no external glow) */
+      &:hover span { opacity: 0.95; }
+
+      /* Focus ring via input focus (keyboard) — use subtle border only */
+      input[type="checkbox"]:focus-visible + span { border-width: 2px; }
+
+      /* Selected state: slightly stronger background and border, no external glow */
+      &.white input[type="checkbox"]:checked + span { background: #f0f0f0; border-width: 2px; }
+      &.blue  input[type="checkbox"]:checked + span { background: #d6e6ff; border-width: 2px; }
+      &.red   input[type="checkbox"]:checked + span { background: #ffd6db; border-width: 2px; }
+
+      /* Add check icon inside selected pill */
+      input[type="checkbox"]:checked + span::after {
+        content: '✔';
+        font-size: 0.8rem;
+        line-height: 1;
+        margin-left: 0.4rem;
+        vertical-align: middle;
+        color: currentColor; /* match pill text color */
+      }
+    }
+  }
+
+  .actions {
+    margin-top: 0; /* inline with fields */
+    display: flex;
+    justify-content: flex-end;
+    align-self: end; /* align with inputs baseline */
+    margin-left: 0.15rem; /* reduce nudge away from Tee */
+    button { padding: 0.35rem 0.6rem; font-size: 0.9rem; } /* smaller button */
+  }
+}
+
+/* Tee chips inside player cards (display) should match header/add-player */
+.teams-panel .player .chip.white,
+.players-panel .player .chip.white {
+  background: #ffffff;
+  color: #111;
+  border-color: rgba(0,0,0,0.15);
+}
+.teams-panel .player .chip.blue,
+.players-panel .player .chip.blue {
+  background: #e7eeff;
+  color: #0f3d91;
+  border-color: rgba(59,130,246,0.35);
+}
+.teams-panel .player .chip.red,
+.players-panel .player .chip.red {
+  background: #ffe7ea;
+  color: #7b1e2b;
+  border-color: rgba(239,68,68,0.35);
+}
