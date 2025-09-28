@@ -50,6 +50,34 @@ Run tests with coverage:
 npm run test:coverage
 ```
 
+## 🚀 Deployment to GitHub Pages
+
+This application is configured to be deployed to GitHub Pages. Follow these steps to deploy:
+
+1. Ensure your repository is pushed to GitHub and named `MembersGame` (case-sensitive)
+2. Run the deployment command:
+   ```bash
+   npm run deploy
+   ```
+3. Go to your repository on GitHub and navigate to Settings > Pages
+4. Under "Source", select "GitHub Actions" as the source
+5. The site will be available at: `https://perrtyler.github.io/MembersGame`
+
+### Important Notes:
+- The repository must be public unless you have a GitHub Pro account
+- The first deployment might take a few minutes to complete
+- After deployment, it might take a few minutes for the site to be available
+- If you rename your repository, update the `homepage` field in `package.json` and the `base` in `vite.config.ts`
+
+## 🛠️ Development
+
+For local development, start the development server:
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:3000`
+
 ## 🔧 Build
 
 Build for production:
