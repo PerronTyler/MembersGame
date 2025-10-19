@@ -1,9 +1,112 @@
 /* Basic, clean styling for the CourseManager */
+:root {
+  /* Revert to previous yellowish panel background */
+  --panel-bg: #f7f2ea;
+  --panel-border: rgba(160, 140, 120, 0.25);
+}
 .course-manager {
   max-width: min(2000px, 96vw); /* fluid, wider layout */
   width: 100%;
   margin: 0 auto;
   padding: 1.25rem 1rem; /* modestly increase side padding for larger widths */
+}
+
+/* Linked players stacked visually with a chain connector */
+.linked-group {
+  display: block;
+  position: relative; /* anchor group rail */
+}
+.linked-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-left: 40px; /* space for 25px rail + 5px border + padding */
+  margin-right: 22px; /* space for right brace */
+}
+.linked-item {
+  position: relative;
+}
+.group-rail {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 25px; /* requested thickness */
+  /* warm neutral brown to fit panel theme */
+  background: linear-gradient(180deg, #a6784f 0%, #8a5f3d 100%);
+  border-radius: 4px;
+  border: 5px solid rgba(0,0,0,0.7); /* thicker dark border to bolden */
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.12) inset, 0 2px 10px rgba(15,23,42,0.3);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Right-side bracket indicator for linked groups */
+.group-brace {
+  position: absolute;
+  right: 0; /* keep fully inside for visibility */
+  top: 0;
+  bottom: 0;
+  width: 16px; /* wider so ticks are visible */
+  pointer-events: none;
+  z-index: 2; /* ensure above panel background */
+}
+.group-brace::before {
+  /* vertical spine */
+  content: '';
+  position: absolute;
+  right: 4px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255,255,255,0.45);
+  border-radius: 2px;
+}
+.group-brace::after {
+  /* top and bottom ticks to suggest a bracket */
+  content: '';
+  position: absolute;
+  right: 4px;
+  top: 0;
+  bottom: 0;
+  width: 12px; /* tick length */
+  background:
+    linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)) right 0 / 12px 2px no-repeat,
+    linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)) right 100% / 12px 2px no-repeat;
+}
+.link-connector {
+  position: relative;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -2px 0; /* tuck closer to cards */
+}
+.link-connector::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-1px);
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  /* match rail tone */
+  background: linear-gradient(180deg, #a6784f 0%, #8a5f3d 100%);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.35);
+}
+.link-connector .chain {
+  position: relative;
+  z-index: 1;
+  /* hide emoji text and render a pill that matches the rail */
+  font-size: 0; /* hide glyph */
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #a6784f 0%, #8a5f3d 100%);
+  border: 2px solid rgba(0,0,0,0.7);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.12) inset;
 }
 
 /* Create Course specific tweaks */
@@ -12,22 +115,54 @@
 
   > h2 {
     color: inherit; /* match Members Game title color */
+    font-size: 1.25rem; /* larger title */
+    font-weight: 800;   /* bolder title */
   }
 
   /* Top grid: course name, par, fees */
   .form > .grid:first-of-type label > span {
     color: inherit; /* match Members Game title color */
-    font-weight: 600;
+    font-weight: 800; /* stronger labels */
+    font-size: 1rem;  /* larger labels */
   }
 
   /* Slopes legend matches title color via earlier rule, ensure labels too */
   .slopes .grid label > span {
-    font-weight: 700;
+    font-weight: 800; /* stronger */
+    font-size: 0.95rem;
   }
 
   /* Add more spacing above the slopes section */
   .slopes {
     margin-top: 0.75rem;
+  }
+
+  /* Invert inputs to match dark player/team cards, with larger bold white text */
+  .form input,
+  .form select {
+    background: #111827; /* match dark card */
+    color: #f3f4f6;      /* bold white text */
+    border: 1px solid rgba(255,255,255,0.2);
+    font-size: 1.05rem;  /* larger input text */
+    font-weight: 800;    /* bold input text */
+    padding: 0.7rem 0.8rem; /* slightly larger tap area */
+  }
+  .form input::placeholder {
+    color: rgba(243,244,246,0.75); /* softer white */
+    opacity: 1; /* ensure visible on dark */
+  }
+  .form input:focus,
+  .form select:focus {
+    outline: none;
+    border-color: rgba(255,255,255,0.35);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+    background: #111827; /* keep dark */
+  }
+
+  /* Make labels more readable across the form */
+  .form label > span {
+    font-weight: 800;
+    font-size: 1.1rem; /* increase label size for readability */
   }
 }
 
@@ -38,8 +173,8 @@
   gap: 0.75rem 1rem;
   flex-wrap: wrap;
   /* Match panel styling */
-  border: 1px solid rgba(160, 140, 120, 0.25); /* warm subtle border */
-  background: #f7f2ea; /* light brown to match panels */
+  border: 5px solid #8a5f3d; /* darker brown to match slopes */
+  background: var(--panel-bg); /* light brown to match panels */
   border-radius: 10px;
   padding: 0.6rem 0.8rem;
   margin: 0.75rem 0 1rem;
@@ -79,6 +214,34 @@
       border-color: rgba(239,68,68,0.35) !important;
     }
   }
+
+  /* Invert Add Player inputs to match dark player/team cards with bold white text */
+  .form input,
+  .form select {
+    background: #111827; /* match dark card */
+    color: #f3f4f6;      /* bold white text */
+    border: 1px solid rgba(255,255,255,0.2);
+    font-size: 1.05rem;  /* larger input text */
+    font-weight: 800;    /* bold input text */
+    padding: 0.7rem 0.8rem; /* larger tap area */
+  }
+  .form input::placeholder {
+    color: rgba(243,244,246,0.75); /* softer white */
+    opacity: 1;
+  }
+  .form input:focus,
+  .form select:focus {
+    outline: none;
+    border-color: rgba(255,255,255,0.35);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+    background: #111827;
+  }
+
+  /* Stronger labels for readability */
+  .form label > span {
+    font-weight: 800;
+    font-size: 1rem;
+  }
 }
 
 /* Responsive two-column layout for less scrolling */
@@ -95,11 +258,11 @@
 
 .panel {
   /* warm subtle border to pair with light brown background */
-  border: 1px solid rgba(160, 140, 120, 0.25);
+  border: 5px solid #8a5f3d; /* darker brown to match slopes */
   border-radius: 12px; /* slightly rounder corners */
   padding: 1rem;
   margin-bottom: 1rem;
-  background: #f7f2ea; /* previous light brown background */
+  background: var(--panel-bg); /* unified light brown background */
   /* subtle outline + elevated shadow */
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.35), /* faint inner outline for crispness */
@@ -157,15 +320,15 @@ select:focus {
 
 /* Create Course: style slopes fieldset to fit scheme */
 .slopes {
-  border: 1px solid rgba(160, 140, 120, 0.25);
-  background: #f7f2ea; /* match panel background */
+  border: 5px solid #8a5f3d; /* darker brown, matches rail's darker stop */
+  background: var(--panel-bg); /* match panel background */
   border-radius: 10px;
   padding: 0.6rem 0.75rem 0.75rem;
 
   legend {
     font-weight: 700;
     color: inherit; /* match other titles */
-    background: #f7f2ea;
+    background: var(--panel-bg);
     border-radius: 6px;
     padding: 0 0.4rem;
   }
@@ -268,6 +431,7 @@ select:focus {
   box-sizing: border-box;
   max-width: 100%;
   transition: background-color 0.15s ease, border-color 0.15s ease;
+  position: relative; /* anchor absolute checkbox */
 
   &:hover {
     background: #1f2937; /* lighter on hover */
@@ -323,10 +487,9 @@ select:focus {
 .teams-panel .player .name { text-align: left; justify-self: start; }
 
 /* Use a fixed right column for meta so tee/CH/HI line up across cards */
-.players-panel .players > li.player,
-.teams-panel .players > li.player ul > li.player {
+.players-panel .player {
   display: grid;
-  grid-template-columns: 1fr 260px; /* name left, meta right */
+  grid-template-columns: 1fr auto 260px; /* name, checkbox, meta */
   align-items: center;
 }
 
@@ -338,6 +501,22 @@ select:focus {
   align-items: center;
   column-gap: 0.5rem;
   position: relative; /* anchor popup menu */
+}
+
+/* Teams: format each player row as name | meta (no checkbox in teams) */
+.teams-panel .players > li.player ul > li.player {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  align-items: center;
+}
+
+/* Inline selection checkbox immediately after the player name */
+.players-panel .player .select {
+  justify-self: start;
+  padding-left: 0.5rem;
+}
+.players-panel .player .select input[type="checkbox"] {
+  transform: scale(1.05);
 }
 
 /* Ensure chips have consistent width for alignment */
@@ -424,6 +603,28 @@ select:focus {
 .teams-panel .player .meta .hi {
   justify-self: end;
   text-align: right;
+}
+
+/* Overrides: Make Add Player inputs match Create Course inverted card style */
+.add-player-panel .form input,
+.add-player-panel .form select {
+  background: #111827; /* match dark card */
+  color: #f3f4f6;      /* bold white text */
+  border: 1px solid rgba(255,255,255,0.2);
+  font-size: 1.05rem;  /* larger input text */
+  font-weight: 800;    /* bold input text */
+  padding: 0.7rem 0.8rem; /* larger tap area */
+}
+.add-player-panel .form input::placeholder {
+  color: rgba(243,244,246,0.75);
+  opacity: 1;
+}
+.add-player-panel .form input:focus,
+.add-player-panel .form select:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.35);
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+  background: #111827;
 }
 
 /* Responsive: collapse to single column on small widths */
@@ -530,14 +731,27 @@ select:focus {
   }
 
   .players {
-    grid-template-columns: repeat(3, minmax(360px, 1fr));
+    /* Masonry-like layout using CSS columns */
+    display: block; /* override base grid */
+    column-count: 3;
+    column-gap: 0.75rem;
 
     @media (max-width: 1100px) {
-      grid-template-columns: repeat(2, minmax(320px, 1fr));
+      column-count: 2;
     }
     @media (max-width: 700px) {
-      grid-template-columns: 1fr;
+      column-count: 1;
     }
+  }
+
+  /* Each group item should not break across columns */
+  .players > li {
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    -moz-column-break-inside: avoid;
+    margin: 0 0 0.75rem;
+    width: 100%;
+    display: inline-block; /* required for columns */
   }
 }
 
@@ -547,10 +761,34 @@ select:focus {
   display: flex;
   flex-direction: column; /* title on top, form below */
   gap: 0.5rem; /* reduce gap between title and form */
+  
+  /* Style for form inputs */
+  .form {
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 0.5rem;
+      border: 6px solid rgba(255,255,255,0.1); /* light gray border */
+      border-radius: 0.375rem; /* rounded corners */
+      background-color: #243044;
+      transition: border-color 0.2s ease-in-out;
+      
+      &:focus {
+        outline: none;
+        border-color: #9ca3af; /* slightly darker border on focus */
+        box-shadow: 0 0 0 1px #9ca3af;
+      }
+      
+      &::placeholder {
+        color: #9ca3af; /* light gray placeholder text */
+      }
+    }
+  }
 
   h2 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.25rem; /* larger title for readability */
+    font-weight: 800;    /* bolder title */
   }
 
   .form {

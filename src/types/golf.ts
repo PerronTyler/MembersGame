@@ -3,10 +3,15 @@
 export type Tee = 'white' | 'blue' | 'red'
 
 export interface Player {
+  id: string
   firstName: string
   lastName?: string
   handicapIndex: number
   tee: Tee
+  // Optional group identifier to link players together as a package
+  // When present, players sharing the same linkGroupId must be paired on the same team
+  // A group can have up to 4 players
+  linkGroupId?: string
 }
 
 export interface CourseSlopesByTee {

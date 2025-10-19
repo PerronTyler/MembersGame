@@ -6,6 +6,8 @@ export interface GameSettings {
   // Future: scoringType, strokesAllowance, etc.
   skinsPoolPerPlayer?: number // optional skins side pot
   randomSeed?: number // optional seed to vary balanced team generation
+  randomizeTeams?: boolean // when true, assign groups randomly instead of balanced
+  paidPlaces?: number // number of finishing places paid out (default 3)
 }
 
 export interface PlayerWithCH extends Player {
@@ -56,120 +58,254 @@ function shuffleInPlace<T>(arr: T[], rand: () => number) {
 }
 
 function determineTeamSizes(total: number): number[] {
-  // Handle very small groups directly
+  // No team > 4. Prefer 4s, then 3s. Use 2 only when necessary. Never create 5s.
   if (total <= 4) return [total]
 
-  // We never want teams larger than 4. Prefer as many 4s as possible, then 3s.
-  // Compute the minimum number of teams needed so that no team exceeds 4.
-  const numTeams = Math.ceil(total / 4)
+  const sizes: number[] = []
+  let n4 = Math.floor(total / 4)
+  let rem = total - n4 * 4
 
-  // Start everyone at size 3 to avoid creating 5s when distributing extras.
-  // We will then add 1 to the first `extras` teams to make them 4.
-  const sizes = new Array<number>(numTeams).fill(3)
-  const extras = total - numTeams * 3 // number of teams that should have 4 instead of 3
-  for (let i = 0; i < extras; i++) {
-    sizes[i] = 4
+  if (rem === 0) {
+    for (let i = 0; i < n4; i++) sizes.push(4)
+    return sizes
   }
 
-  // At this point, sizes are a mix of 4s and 3s (and never > 4).
-  // Edge case: if total == numTeams*3, all 3s; if total == numTeams*4, all 4s.
+  if (rem === 1) {
+    if (n4 >= 2) {
+      // Example: total=9 -> 4+4+1 => 3+3+3
+      for (let i = 0; i < n4 - 2; i++) sizes.push(4)
+      sizes.push(3, 3, 3)
+      return sizes
+    } else {
+      // Example: total=5 -> 3+2
+      sizes.push(3, 2)
+      return sizes
+    }
+  }
+
+  if (rem === 2) {
+    if (n4 >= 1) {
+      // Prefer to avoid a lone group of 2: convert one 4 and the 2 into two 3s
+      for (let i = 0; i < n4 - 1; i++) sizes.push(4)
+      sizes.push(3, 3)
+      return sizes
+    } else {
+      // No 4s to borrow from (e.g., total=2); must use a 2
+      sizes.push(2)
+      return sizes
+    }
+  }
+
+  // rem === 3
+  for (let i = 0; i < n4; i++) sizes.push(4)
+  sizes.push(3)
   return sizes
 }
 
-function snakeDistribute(players: PlayerWithCH[], teamSizes: number[], seed?: number): Team[] {
-  // Create empty teams
-  const teams: Team[] = teamSizes.map((_, idx) => ({ id: idx + 1, players: [], teamHandicap: 0 }))
-  // Sort by talent ascending (best first)
-  const sorted = sortPlayersByTalent(players)
-
-  // To introduce variability while keeping balance, shuffle within equal-CH buckets
-  if (typeof seed === 'number') {
-    const rand = rng(seed)
-    // 1) Shuffle strictly equal CH buckets for stability with duplicates
-    let i = 0
-    while (i < sorted.length) {
-      const ch = sorted[i].courseHandicap
-      let j = i + 1
-      while (j < sorted.length && sorted[j].courseHandicap === ch) j++
-      const slice = sorted.slice(i, j)
-      shuffleInPlace(slice, rand)
-      for (let k = i; k < j; k++) sorted[k] = slice[k - i]
-      i = j
-    }
-
-    // 2) Apply a gentle local perturbation within small forward windows
-    // This preserves overall balance but adds variance between runs.
-    const window = 3 // max lookahead positions to swap within
-    for (let a = 0; a < sorted.length - 1; a++) {
-      const maxJ = Math.min(sorted.length - 1, a + window)
-      const b = a + Math.floor(rand() * (maxJ - a + 1))
-      if (b !== a) {
-        const tmp = sorted[a]
-        sorted[a] = sorted[b]
-        sorted[b] = tmp
+function basePayoutRatios(places: number, numTeams: number): number[] {
+  // Cap places to number of teams and minimum 1
+  const n = Math.max(1, Math.min(places, numTeams))
+  // Common schedules for up to 5; beyond that, taper with a gentle geometric falloff
+  switch (n) {
+    case 1: return [1]
+    case 2: return [0.6, 0.4]
+    case 3: return [0.5, 0.3, 0.2]
+    case 4: return [0.4, 0.3, 0.2, 0.1]
+    case 5: return [0.35, 0.25, 0.18, 0.12, 0.10]
+    default: {
+      const ratios: number[] = []
+      let remaining = 1
+      let share = 0.35
+      for (let i = 0; i < n; i++) {
+        const v = i === n - 1 ? remaining : Math.max(0.05, share)
+        ratios.push(v)
+        remaining -= v
+        share *= 0.7
       }
+      // Normalize to sum 1
+      const sum = ratios.reduce((a, b) => a + b, 0)
+      return ratios.map(r => r / sum)
     }
   }
-
-  // Snake draft assignment across teams to balance skill
-  // Randomize initial direction a bit for added variance when a seed is provided
-  let forward = typeof seed === 'number' ? rng(seed)() < 0.5 : true
-  let teamIndex = 0
-  for (const p of sorted) {
-    // find next team that still needs players
-    while (teams[teamIndex].players.length >= teamSizes[teamIndex]) {
-      if (forward) {
-        teamIndex++
-        if (teamIndex >= teams.length) {
-          teamIndex = teams.length - 1
-          forward = false
-        }
-      } else {
-        teamIndex--
-        if (teamIndex < 0) {
-          teamIndex = 0
-          forward = true
-        }
-      }
-    }
-
-    teams[teamIndex].players.push(p)
-    // advance index for next assignment
-    if (forward) {
-      teamIndex++
-      if (teamIndex >= teams.length) {
-        teamIndex = teams.length - 1
-        forward = false
-      }
-    } else {
-      teamIndex--
-      if (teamIndex < 0) {
-        teamIndex = 0
-        forward = true
-      }
-    }
-  }
-
-  // compute teamHandicap as sum of CHs
-  for (const t of teams) {
-    t.teamHandicap = t.players.reduce((sum, p) => sum + p.courseHandicap, 0)
-  }
-
-  return teams
 }
 
-function payoutSchedule(numTeams: number): number[] {
-  // Limit payouts to top 3 teams max and normalize to 100%
-  if (numTeams <= 1) return [1.0]
-  if (numTeams === 2) return [0.6, 0.4]
-  // For 3 or more teams, pay top 3: 50/30/20
-  return [0.5, 0.3, 0.2]
+function roundPayoutsPrefer10Then5(values: number[], total: number): number[] {
+  // Try rounding to nearest 10 first, then fallback to 5 if necessary
+  const tryRound = (step: number) => {
+    const rounded = values.map(v => Math.max(0, Math.round(v / step) * step))
+    let diff = total - rounded.reduce((a, b) => a + b, 0)
+    // Adjust by distributing +/- step starting from top places
+    // To keep descending order, always adjust earlier places first and ensure non-negative
+    const dir = Math.sign(diff)
+    diff = Math.abs(diff)
+    while (diff >= step) {
+      let adjusted = false
+      for (let i = 0; i < rounded.length && diff >= step; i++) {
+        const next = rounded[i] + dir * step
+        if (dir > 0 || (dir < 0 && next >= 0)) {
+          rounded[i] = next
+          diff -= step
+          adjusted = true
+        }
+      }
+      if (!adjusted) break
+    }
+    // Enforce non-increasing order (fix rare edge cases after adjustments)
+    for (let i = 1; i < rounded.length; i++) {
+      if (rounded[i] > rounded[i - 1]) rounded[i] = rounded[i - 1]
+    }
+    return { rounded, sum: rounded.reduce((a, b) => a + b, 0) }
+  }
+
+  const v10 = tryRound(10)
+  if (v10.sum === total) return v10.rounded
+  const v5 = tryRound(5)
+  // If neither matches exactly, choose the closer and adjust last place by remainder safely
+  if (v5.sum !== total) {
+    const rounded = v5.rounded.slice()
+    let diff = total - v5.sum
+    if (rounded.length > 0) rounded[0] += diff // adjust top prize to close the gap
+    // keep non-increasing
+    for (let i = 1; i < rounded.length; i++) {
+      if (rounded[i] > rounded[i - 1]) rounded[i] = rounded[i - 1]
+    }
+    return rounded
+  }
+  return v5.rounded
 }
 
 export function generateGame(course: Course, players: Player[], settings: GameSettings): GameResult {
   const enriched = players.map((p) => computePlayerCH(course, p))
   const teamSizes = determineTeamSizes(enriched.length)
-  const teams = snakeDistribute(enriched, teamSizes, settings.randomSeed)
+
+  // Group players by linkGroupId; undefined are singleton groups
+  type Group = { id: string; members: PlayerWithCH[]; size: number; strength: number }
+  const groupsMap = new Map<string, Group>()
+  const singletonPrefix = 'single:'
+  for (const p of enriched) {
+    const gid = p.linkGroupId ?? `${singletonPrefix}${p.id}`
+    let g = groupsMap.get(gid)
+    if (!g) {
+      g = { id: gid, members: [], size: 0, strength: 0 }
+      groupsMap.set(gid, g)
+    }
+    g.members.push(p)
+  }
+  const groups: Group[] = []
+  for (const g of groupsMap.values()) {
+    g.size = g.members.length
+    // Enforce max group size of 4
+    if (g.size > 4) {
+      // If a group exceeds 4, we still need a deterministic behavior; split into chunks of max 4
+      // This should generally not happen due to UI constraints
+      const chunked: PlayerWithCH[][] = []
+      for (let i = 0; i < g.members.length; i += 4) chunked.push(g.members.slice(i, i + 4))
+      chunked.forEach((chunk, idx) => {
+        groups.push({
+          id: `${g.id}#${idx + 1}`,
+          members: chunk,
+          size: chunk.length,
+          strength: chunk.reduce((s, m) => s + m.courseHandicap, 0) / chunk.length, // avg CH
+        })
+      })
+      continue
+    }
+    // Use average course handicap as strength for balancing (lower = stronger)
+    g.strength = g.members.reduce((s, m) => s + m.courseHandicap, 0) / Math.max(1, g.members.length)
+    groups.push(g)
+  }
+
+  // Prepare groups ordering
+  let sortedGroups: Group[]
+  if (settings.randomizeTeams) {
+    // Random order, but place larger groups slightly earlier to reduce fit failures
+    sortedGroups = groups.slice()
+    const rand = typeof settings.randomSeed === 'number' ? rng(settings.randomSeed) : Math.random
+    // Shuffle
+    for (let i = sortedGroups.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1))
+      ;[sortedGroups[i], sortedGroups[j]] = [sortedGroups[j], sortedGroups[i]]
+    }
+    // Stable sort tweak: move larger groups forward a bit
+    sortedGroups.sort((a, b) => b.size - a.size || a.id.localeCompare(b.id))
+  } else {
+    // Balanced order: size desc, then strength asc
+    sortedGroups = groups.slice().sort((a, b) => {
+      if (a.size !== b.size) return b.size - a.size
+      if (a.strength !== b.strength) return a.strength - b.strength
+      return a.id.localeCompare(b.id)
+    })
+  }
+
+  // Initialize empty teams with capacity tracking
+  const teamsInit: Team[] = teamSizes.map((_, idx) => ({ id: idx + 1, players: [], teamHandicap: 0 }))
+  const remaining: number[] = teamSizes.slice()
+
+  // Assign groups while strictly respecting capacities (no team > 4)
+  if (settings.randomizeTeams) {
+    const rand = typeof settings.randomSeed === 'number' ? rng(settings.randomSeed) : Math.random
+    for (const g of sortedGroups) {
+      // Try random team indexes until one fits (bounded attempts)
+      const order = teamsInit.map((_, i) => i)
+      for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(rand() * (i + 1))
+        ;[order[i], order[j]] = [order[j], order[i]]
+      }
+      let placed = false
+      for (const idx of order) {
+        if (remaining[idx] >= g.size) {
+          teamsInit[idx].players.push(...g.members)
+          remaining[idx] -= g.size
+          placed = true
+          break
+        }
+      }
+      if (!placed) {
+        // As a fallback, scan in order to find any fit
+        for (let k = 0; k < teamsInit.length; k++) {
+          if (remaining[k] >= g.size) {
+            teamsInit[k].players.push(...g.members)
+            remaining[k] -= g.size
+            placed = true
+            break
+          }
+        }
+      }
+      if (!placed) throw new Error(`Unable to place group of size ${g.size} within team capacities`)
+    }
+  } else {
+    for (const g of sortedGroups) {
+      // Find the team with the largest remaining capacity that can fit this group
+      let bestIdx = -1
+      let bestRemain = -1
+      for (let k = 0; k < teamsInit.length; k++) {
+        const rem = remaining[k]
+        if (rem >= g.size && rem > bestRemain) {
+          bestRemain = rem
+          bestIdx = k
+        }
+      }
+      if (bestIdx === -1) {
+        // As a safety, try any team that can fit (shouldn't happen given sizes sum exactly)
+        for (let k = 0; k < teamsInit.length; k++) {
+          if (remaining[k] >= g.size) { bestIdx = k; break }
+        }
+      }
+      if (bestIdx === -1) {
+        // Final guard: do not overflow; if impossible, throw to surface issue
+        throw new Error(`Unable to place group of size ${g.size} within team capacities`)
+      }
+      teamsInit[bestIdx].players.push(...g.members)
+      remaining[bestIdx] -= g.size
+    }
+  }
+
+  // compute teamHandicap as sum of CHs
+  for (const t of teamsInit) {
+    t.teamHandicap = t.players.reduce((sum, p) => sum + p.courseHandicap, 0)
+  }
+
+  const teams = teamsInit
   // Sort teams by size ascending; tie-break by team handicap ascending
   const sortedTeams = teams
     .slice()
@@ -182,8 +318,11 @@ export function generateGame(course: Course, players: Player[], settings: GameSe
 
   const prizePool = Math.max(0, Math.round(settings.entryFeePerPlayer * enriched.length))
   const skinsPool = Math.max(0, Math.round((settings.skinsPoolPerPlayer ?? 0) * enriched.length))
-  const schedule = payoutSchedule(sortedTeams.length)
-  const payouts = schedule.map((pct, i) => ({ place: i + 1, amount: Math.round(prizePool * pct) }))
+  const places = Math.max(1, settings.paidPlaces ?? 3)
+  const ratios = basePayoutRatios(places, sortedTeams.length)
+  const rawAmounts = ratios.map(r => r * prizePool)
+  const finalAmounts = roundPayoutsPrefer10Then5(rawAmounts, prizePool)
+  const payouts = finalAmounts.map((amt, i) => ({ place: i + 1, amount: amt }))
 
   return {
     course,
